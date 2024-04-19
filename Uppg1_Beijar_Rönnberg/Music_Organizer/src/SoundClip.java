@@ -7,14 +7,16 @@ import java.io.File;
 public class SoundClip {
 
 	private final File file;
+    private final String title;
 	
 	/**
 	 * Make a SoundClip from a file.
 	 * Requires file != null.
 	 */
-	public SoundClip(File file) {
+	public SoundClip(File file, String title) {
 		assert file != null;
 		this.file = file;
+        this.title = title;
 	}
 
     /**
@@ -33,7 +35,7 @@ public class SoundClip {
 	}
 	
 	public String toString(){
-		return file.getName();
+		return title;
 	}
 	
 	@Override

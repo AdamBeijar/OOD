@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -17,7 +18,7 @@ public class Music_OrganizerTest {
     public void testAddSoundClip() {
         Music_Organizer organizer = new Music_Organizer();
         Album rootAlbum = organizer.getRootAlbum();
-        SoundClip soundClip = new SoundClip(new File("../testFiles/test.txt"));
+        SoundClip soundClip = new SoundClip(new File("../testFiles/test.txt"), "Test");
         organizer.addSoundClip(soundClip, rootAlbum);
         assertTrue(rootAlbum.getSoundClips().contains(soundClip));
     }
@@ -32,7 +33,7 @@ public class Music_OrganizerTest {
     public void testIsSoundClipFound() {
         Music_Organizer organizer = new Music_Organizer();
         Album rootAlbum = organizer.getRootAlbum();
-        SoundClip soundClip = new SoundClip(new File("../testFiles/test.txt"));
+        SoundClip soundClip = new SoundClip(new File("../testFiles/test.txt"), "Test");
         organizer.addSoundClip(soundClip, rootAlbum);
         assertTrue(organizer.isSoundClipFound(soundClip, rootAlbum));
     }
@@ -41,7 +42,7 @@ public class Music_OrganizerTest {
     public void testRemoveSoundClip() {
         Music_Organizer organizer = new Music_Organizer();
         Album rootAlbum = organizer.getRootAlbum();
-        SoundClip soundClip = new SoundClip(new File("../testFiles/test.txt"));
+        SoundClip soundClip = new SoundClip(new File("../testFiles/test.txt"), "Test");
         System.out.println(rootAlbum.size());
         organizer.addSoundClip(soundClip, rootAlbum);
         System.out.println(rootAlbum.size());
