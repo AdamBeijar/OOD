@@ -37,7 +37,6 @@ public class Album {
      */
     public void addSoundClip(SoundClip soundClip) {
         soundClips.add(soundClip);
-        System.out.println("Sound clip added to album: " + soundClip.toString());
     }
 
     /**

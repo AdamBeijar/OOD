@@ -111,12 +111,8 @@ public class MusicOrganizerWindow extends Application {
 						soundClipTable.display(selectedAlbum);
 					}
 				}
-				
 			}
-			
 		});
-
-		
 		return v;
 	}
 	
