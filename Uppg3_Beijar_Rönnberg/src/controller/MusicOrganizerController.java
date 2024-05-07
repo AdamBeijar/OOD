@@ -87,9 +87,6 @@ public class MusicOrganizerController {
 		}
 		parent.removeSubAlbum(album);
 		view.onAlbumRemoved();
-		album.markAsChanged();
-		album.notifyObservers("albumRemoved");
-		System.out.println("Album removed");
 	}
 	
 	/**
@@ -111,9 +108,6 @@ public class MusicOrganizerController {
 				}
 				parentAblum = parentAblum.getParentAlbum();
 			}
-		album.markAsChanged();
-		album.notifyObservers("clipsUpdated");
-		System.out.println("Clips updated");
 		view.onClipsUpdated();
 	}
 	
@@ -133,9 +127,6 @@ public class MusicOrganizerController {
 				subAlbum.removeSoundClip(clip);
 			}
 		}
-		album.markAsChanged();
-		album.notifyObservers("clipsUpdated");
-		System.out.println("Clips updated");
 		view.onClipsUpdated();
 	}
 	

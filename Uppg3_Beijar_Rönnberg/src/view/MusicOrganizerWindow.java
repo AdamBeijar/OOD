@@ -107,8 +107,9 @@ public class MusicOrganizerWindow extends Application {
 			public void handle(MouseEvent e) {
 				if(e.getClickCount()==2) {
 					Album selectedAlbum = getSelectedAlbum();
-					AlbumWindow albumWindow = new AlbumWindow();
-					albumWindow.createWindow(selectedAlbum);
+					if(selectedAlbum != null) {
+						soundClipTable.display(selectedAlbum);
+					}
 				}
 			}
 		});

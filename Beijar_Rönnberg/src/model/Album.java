@@ -1,13 +1,12 @@
 package model;
 
 import java.util.HashSet;
-import java.util.Observable;
 
 /**
  * Album is a class representing a collection of
  * sound clips and sub-albums.
  */
-public class Album extends Observable{
+public class Album {
     private final String title;
     private final Album parentAblum;
     private HashSet<Album> subAlbums = new HashSet<>();
@@ -94,10 +93,6 @@ public class Album extends Observable{
      */
     public HashSet<SoundClip> getSoundClips() {
         return soundClips;
-    }
-
-    public void markAsChanged() {
-        setChanged();
     }
 
     /**
