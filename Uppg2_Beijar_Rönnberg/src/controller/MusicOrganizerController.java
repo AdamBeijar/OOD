@@ -4,12 +4,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import model.Album;
 import model.SoundClip;
 import model.SoundClipBlockingQueue;
 import model.SoundClipLoader;
 import model.SoundClipPlayer;
 import view.MusicOrganizerWindow;
+import java.io.File;
 
 public class MusicOrganizerController {
 
@@ -151,5 +154,9 @@ public class MusicOrganizerController {
 		for(int i=0;i<l.size();i++) {
 			view.displayMessage("Playing " + l.get(i));
 		}
+		// play the soundclip
+		Media media = new Media(l.get(0).getFile().toURI().toString());
+		MediaPlayer mediaPlayer = new MediaPlayer(media);
+		mediaPlayer.play();
 	}
 }
