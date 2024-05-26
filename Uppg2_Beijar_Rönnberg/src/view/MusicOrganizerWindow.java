@@ -12,6 +12,9 @@ import javafx.stage.WindowEvent;
 import model.Album;
 import model.SoundClip;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.SelectionMode;
@@ -21,7 +24,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-
+import javafx.scene.layout.VBox;
 
 
 public class MusicOrganizerWindow extends Application {
@@ -50,16 +53,40 @@ public class MusicOrganizerWindow extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-				
 		try {
 			controller.registerView(this);
 			primaryStage.setTitle("Music Organizer");
 			
 			bord = new BorderPane();
-			
+			Menu menuFile = new Menu("File");
+
+			MenuBar menuBar = new MenuBar();
+
+			MenuItem saveAs = new MenuItem("Save As...");
+			saveAs.setOnAction(e -> {
+				controller.saveAs(primaryStage);
+			});
+
+			MenuItem Load = new MenuItem("Load Hierarchy");
+			Load.setOnAction(e -> {
+				controller.loadHierarchy();
+			});
+
+			menuFile.getItems().add(Load);
+			menuFile.getItems().add(saveAs);
+
+			menuBar.getMenus().addAll(menuFile);
+
 			// Create buttons in the top of the GUI
 			buttons = new ButtonPaneHBox(controller, this);
-			bord.setTop(buttons);
+			
+			VBox topContainer = new VBox();
+			menuBar.setUseSystemMenuBar(true);
+			topContainer.getChildren().addAll(menuBar, buttons);
+
+			bord.setTop(topContainer);
+
+
 
 			// Create the tree in the left of the GUI
 			tree = createTreeView();
@@ -88,6 +115,7 @@ public class MusicOrganizerWindow extends Application {
 				
 			});
 
+			
 			primaryStage.show();
 			
 			
@@ -99,6 +127,7 @@ public class MusicOrganizerWindow extends Application {
 	
 	private TreeView<Album> createTreeView(){
 		rootNode = new TreeItem<>(controller.getRootAlbum());
+		System.out.println(controller.getRootAlbum() + " is the root album with: " + controller.getRootAlbum().getSubAlbums().size() + " subalbums");
 		TreeView<Album> v = new TreeView<>(rootNode);
 		
 		v.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -107,8 +136,9 @@ public class MusicOrganizerWindow extends Application {
 			public void handle(MouseEvent e) {
 				if(e.getClickCount()==2) {
 					Album selectedAlbum = getSelectedAlbum();
+					soundClipTable.display(selectedAlbum);
 					AlbumWindow albumWindow = new AlbumWindow();
-					albumWindow.createWindow(selectedAlbum);
+					albumWindow.createWindow(selectedAlbum, controller);
 				}
 			}
 		});
@@ -124,7 +154,7 @@ public class MusicOrganizerWindow extends Application {
 			@Override
 			public void handle(MouseEvent e) {
 				if(e.getClickCount() == 2) {
-					controller.playSoundClips();
+					controller.playSoundClips(v.getSelectedClips());
 				}
 			}
 		});
@@ -163,6 +193,32 @@ public class MusicOrganizerWindow extends Application {
 	private TreeItem<Album> getSelectedTreeItem(){
 		return tree.getSelectionModel().getSelectedItem();
 	}
+
+	/**
+	 * Updates the tree view with a new root album when you load a new hierarchy
+	 * @param newRoot
+	 */
+	public void updateTreeView(Album newRoot) {
+		rootNode = new TreeItem<>(newRoot);
+		buildTreeItems(rootNode);
+		tree.setRoot(rootNode);
+		tree.setShowRoot(true); // Ensure the root is shown
+		tree.getSelectionModel().select(rootNode); // Select the root node
+	}
+	
+	/**
+	 * Recursively builds the tree view from the given root album
+	 * @param parentItem
+	 */
+	private void buildTreeItems(TreeItem<Album> parentItem) {
+		Album parentAlbum = parentItem.getValue();
+		for (Album subAlbum : parentAlbum.getSubAlbums()) {
+			TreeItem<Album> childItem = new TreeItem<>(subAlbum);
+			parentItem.getChildren().add(childItem);
+			buildTreeItems(childItem); // Recursive call to build the full tree
+		}
+	}
+	
 	
 	
 	
@@ -190,6 +246,8 @@ public class MusicOrganizerWindow extends Application {
 	public List<SoundClip> getSelectedSoundClips(){
 		return soundClipTable.getSelectedClips();
 	}
+
+
 	
 	
 	
@@ -205,21 +263,42 @@ public class MusicOrganizerWindow extends Application {
 	 * Updates the album hierarchy with a new album
 	 * @param newAlbum
 	 */
-	public void onAlbumAdded(Album newAlbum){
-		TreeItem<Album> parentItem = getSelectedTreeItem();
-		TreeItem<Album> newItem = new TreeItem<>(newAlbum);
-		parentItem.getChildren().add(newItem);
-		parentItem.setExpanded(true); // automatically expand the parent node in the tree
-	}
+	public void onAlbumAdded(Album parent, Album newAlbum){
 	
-	/**
-	 * Updates the album hierarchy by removing an album from it
-	 */
-	public void onAlbumRemoved(){
-		TreeItem<Album> toRemove = getSelectedTreeItem(); 
-		TreeItem<Album> parent = toRemove.getParent();
-		parent.getChildren().remove(toRemove);
+		TreeItem<Album> root = tree.getRoot();
+		TreeItem<Album> parentNode = findAlbumNode(parent, root);
+			
+		parentNode.getChildren().add(new TreeItem<>(newAlbum));
+		parentNode.setExpanded(true); // automatically expand the parent node in the tree	
+			
+	}
 		
+		
+	
+	public void onAlbumRemoved(Album toRemove){
+			
+		TreeItem<Album> root = tree.getRoot();
+			
+		TreeItem<Album> nodeToRemove = findAlbumNode(toRemove, root);
+		nodeToRemove.getParent().getChildren().remove(nodeToRemove);
+			
+	}
+		
+	private TreeItem<Album> findAlbumNode(Album albumToFind, TreeItem<Album> root) {
+			
+		// recursive method to locate a node that contains a specific album in the TreeView
+			
+		if(root.getValue().equals(albumToFind)) {
+			return root;
+		}
+			
+		for(TreeItem<Album> node : root.getChildren()) {
+			TreeItem<Album> item = findAlbumNode(albumToFind, node);
+			if(item != null)
+				return item;
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -230,5 +309,6 @@ public class MusicOrganizerWindow extends Application {
 		Album a = getSelectedAlbum();
 		soundClipTable.display(a);
 	}
+
 	
 }

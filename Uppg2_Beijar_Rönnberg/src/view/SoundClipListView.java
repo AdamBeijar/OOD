@@ -29,7 +29,11 @@ public class SoundClipListView extends ListView<SoundClip> {
 	 */
 	public void display(Album album){
 		this.getItems().clear();
-		album.getSoundClips().forEach(soundClip -> clips.add(soundClip));
+		if (album != null) {
+			album.getSoundClips().forEach(soundClip -> clips.add(soundClip));
+		} else {
+			System.out.println("Album is null");
+		}
 		ObservableList<SoundClip> temp = FXCollections.observableList(clips);
 		this.setItems(temp);
 	}

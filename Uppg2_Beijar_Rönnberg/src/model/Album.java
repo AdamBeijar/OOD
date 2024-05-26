@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Observable;
 
@@ -7,7 +8,7 @@ import java.util.Observable;
  * Album is a class representing a collection of
  * sound clips and sub-albums.
  */
-public class Album extends Observable{
+public class Album extends Observable implements Serializable{
     private final String title;
     private final Album parentAblum;
     private HashSet<Album> subAlbums = new HashSet<>();

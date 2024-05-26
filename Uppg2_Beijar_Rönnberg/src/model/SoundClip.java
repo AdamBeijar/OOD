@@ -1,11 +1,12 @@
 package model;
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * SoundClip is a class representing a digital
  * sound clip file on disk.
  */
-public class SoundClip {
+public class SoundClip implements Serializable{
 
 	private final File file;
 	
